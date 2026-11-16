@@ -1,16 +1,26 @@
-const { app, BrowserWindow, Menu } = require('electron');
+const { app, BrowserWindow, shell, Menu, dialog } = require('electron');
 const path = require('path');
 
-function createWindow() {
-  const win = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    title: 'صندوق قرض‌الحسنه',
+app.disableHardwareAcceleration();
+
+function create() {
+  Menu.setApplicationMenu(null);
+  const w = new BrowserWindow({
+    width: 1280,
+    height: 850,
+    backgroundColor: '#eef1f8',
+    autoHideMenuBar: true,
     webPreferences: { contextIsolation: true }
   });
-  Menu.setApplicationMenu(null);
-  win.loadFile(path.join(__dirname, 'www', 'index.html'));
+  const f = path.join(app.getAppPath(), 'index.html');
+  w.loadFile(f).catch(e => dialog.showErrorBox('خطا در بارگذاری', f + '\n' + e.message));
+  w.webContents.on('did-fail-load', (ev, code, desc) => dialog.showErrorBox('did-fail-load', code + ' ' + desc + '\n' + f));
+  w.webContents.on('render-process-gone', (ev, d) => dialog.showErrorBox('render-process-gone', d.reason));
+  w.webContents.on('before-input-event', (ev, i) => {
+    if (i.type === 'keyDown' && i.key === 'F12') w.webContents.toggleDevTools();
+  });
+  w.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(create);
 app.on('window-all-closed', () => app.quit());
