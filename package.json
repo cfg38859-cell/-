@@ -4,6 +4,10 @@
   "description": "qarz fund",
   "main": "main.js",
   "author": "qarz-fund",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win nsis portable --x64 --publish never"
+  },
   "dependencies": {
     "@capacitor/android": "^6.2.0",
     "@capacitor/cli": "^6.2.0",
@@ -24,7 +28,23 @@
     },
     "files": [
       "main.js",
-      "www/**/*"
-    ]
+      "www/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "artifactName": "QarzFund-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "QarzFund-Portable-${version}.${ext}"
+    }
   }
 }
