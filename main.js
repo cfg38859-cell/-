@@ -12,9 +12,9 @@ function create() {
     autoHideMenuBar: true,
     webPreferences: { contextIsolation: true }
   });
-  const f = path.join(app.getAppPath(), 'index.html');
+  const f = path.join(app.getAppPath(), 'www', 'index.html');
   w.loadFile(f).catch(e => dialog.showErrorBox('خطا در بارگذاری', f + '\n' + e.message));
-  w.webContents.on('did-fail-load', (ev, code, desc) => dialog.showErrorBox('did-fail-load', code + ' ' + desc + '\n' + f));
+  w.webContents.on('did-fail-load', (ev, code, desc, url) => dialog.showErrorBox('did-fail-load', code + ' ' + desc + '\n' + url));
   w.webContents.on('render-process-gone', (ev, d) => dialog.showErrorBox('render-process-gone', d.reason));
   w.webContents.on('before-input-event', (ev, i) => {
     if (i.type === 'keyDown' && i.key === 'F12') w.webContents.toggleDevTools();
